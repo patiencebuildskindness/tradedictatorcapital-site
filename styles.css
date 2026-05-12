@@ -138,7 +138,13 @@ footer{border-top:0.5px solid var(--border);padding:2.5rem 3rem;display:flex;fle
   .about-grid,.contact-wrap{grid-template-columns:1fr;gap:2rem}
   .services-grid-full{grid-template-columns:1fr}.srv{border-right:none}
   footer{padding:2rem 1.5rem}.footer-top{flex-direction:column;align-items:flex-start}
-  .mission-band{padding:3rem 1.5rem}.slide{height:280px}
+  .mission-band{padding:3rem 1.5rem}
+  .slide{height:auto;min-height:300px;aspect-ratio:16/10;align-items:stretch;display:block}
+  .slide img{position:relative;width:100%;height:100%;object-fit:contain;background:#080808}
+  .slide-overlay{background:linear-gradient(to top,rgba(8,8,8,0.95) 0%,rgba(8,8,8,0.75) 22%,rgba(8,8,8,0) 45%)}
+  .slide-content{position:absolute;left:0;right:0;bottom:0;padding:1.25rem 1.5rem}
+  .slide-title{font-size:1.3rem}
+  .slide-caption{font-size:0.78rem}
   .modal,.srv-modal{padding:1.5rem}
 }
 
@@ -183,6 +189,15 @@ footer{border-top:0.5px solid var(--border);padding:2.5rem 3rem;display:flex;fle
 .cta-band-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.75rem,3.5vw,2.75rem);font-weight:300;line-height:1.2;max-width:680px;margin:0 auto 2rem}
 .cta-band-title em{font-style:italic;color:var(--gold)}
 
+/* broker partner band */
+.broker-band{padding:4.5rem 2rem;text-align:center;border-top:0.5px solid var(--border);background:var(--dark);position:relative}
+.broker-band::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 50% 50%,rgba(201,168,76,0.05) 0%,transparent 70%);pointer-events:none}
+.broker-eyebrow{font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;position:relative}
+.broker-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.5rem,3vw,2.25rem);font-weight:300;margin-bottom:0.85rem;position:relative}
+.broker-title em{font-style:italic;color:var(--gold)}
+.broker-body{font-size:0.9rem;color:var(--muted);max-width:520px;margin:0 auto 1.75rem;line-height:1.7;position:relative}
+.broker-cta{position:relative}
+
 /* contact-page email block (when shown without form on legal pages footer) */
 .contact-block{margin-top:2rem;padding:1.5rem 1.75rem;border:0.5px solid var(--border);background:var(--dark)}
 .contact-block-label{font-size:0.62rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:0.4rem}
@@ -195,4 +210,5 @@ footer{border-top:0.5px solid var(--border);padding:2.5rem 3rem;display:flex;fle
   .page-header{padding:7rem 1.5rem 3rem}
   .legal-page{padding:3.5rem 1.5rem 4rem}
   .cta-band{padding:3.5rem 1.5rem}
+  .broker-band{padding:3rem 1.5rem}
 }

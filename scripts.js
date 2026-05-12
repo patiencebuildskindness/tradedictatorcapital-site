@@ -98,25 +98,48 @@
     });
   }
 
-  /* ── CONTACT FORM (any page with .contact-form) ── */
+  /* ── CONTACT FORM (any page with .contact-form) ──
+     Submits via FormSubmit AJAX so inquiries land in the inbox without leaving the page.
+     First submission triggers a one-time confirmation email — must be clicked before live use. */
   const contactForm = document.querySelector('.contact-form');
-  if (contactForm) {
-    const submitBtn = contactForm.querySelector('button');
-    if (submitBtn) {
-      submitBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        const name = contactForm.querySelector('input[type="text"]').value.trim();
-        const email = contactForm.querySelector('input[type="email"]').value.trim();
-        const message = contactForm.querySelector('textarea').value.trim();
-        if (!name || !email || !message) {
-          alert('Please fill in all fields before submitting.');
-          return;
+  if (contactForm && contactForm.tagName === 'FORM') {
+    const statusEl = contactForm.querySelector('.form-status');
+    const setStatus = (msg, tone) => {
+      if (!statusEl) return;
+      statusEl.textContent = msg;
+      statusEl.style.color = tone === 'ok' ? 'var(--gold)' : tone === 'err' ? '#d97a7a' : 'var(--muted)';
+    };
+    contactForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const data = new FormData(contactForm);
+      const name = (data.get('name') || '').toString().trim();
+      const email = (data.get('email') || '').toString().trim();
+      const message = (data.get('message') || '').toString().trim();
+      if (!name || !email || !message) {
+        setStatus('Please fill in all fields before submitting.', 'err');
+        return;
+      }
+      const btn = contactForm.querySelector('button[type="submit"]');
+      const btnText = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+      setStatus('Sending…');
+      try {
+        const res = await fetch(contactForm.action, {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          contactForm.reset();
+          setStatus('Thank you. Your inquiry has been received — we will respond by email.', 'ok');
+        } else {
+          setStatus('Submission failed. Please email us directly at Tradedictatorcapital@gmail.com.', 'err');
         }
-        // No backend yet — open user's mail client with prefilled inquiry
-        const subject = encodeURIComponent('Inquiry from ' + name);
-        const body = encodeURIComponent(message + '\n\n— ' + name + '\n' + email);
-        window.location.href = 'mailto:Tradedictatorcapital@gmail.com?subject=' + subject + '&body=' + body;
-      });
-    }
+      } catch (_) {
+        setStatus('Network error. Please email us directly at Tradedictatorcapital@gmail.com.', 'err');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = btnText; }
+      }
+    });
   }
 })();
