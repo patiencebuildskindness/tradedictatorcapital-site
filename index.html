@@ -332,7 +332,7 @@ footer{border-top:0.5px solid var(--border);padding:2.5rem 3rem;display:flex;fle
     <div>
       <p class="section-label">Contact</p>
       <h2 class="section-title">Serious Inquiries<br><em>Only</em></h2>
-      <form class="contact-form" action="https://formsubmit.co/Tradedictatorcapital@gmail.com" method="POST">
+      <form class="contact-form" id="contactForm" action="https://formsubmit.co/Tradedictatorcapital@gmail.com" method="POST">
         <input type="hidden" name="_subject" value="New TDC Inquiry">
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_template" value="table">
@@ -340,7 +340,8 @@ footer{border-top:0.5px solid var(--border);padding:2.5rem 3rem;display:flex;fle
         <div class="form-field"><label>Full Name</label><input type="text" name="name" placeholder="Your name" required></div>
         <div class="form-field"><label>Email Address</label><input type="email" name="email" placeholder="your@email.com" required></div>
         <div class="form-field"><label>Message</label><textarea name="message" placeholder="State your inquiry..." required></textarea></div>
-        <button type="submit" class="btn-primary" style="align-self:flex-start;margin-top:0.5rem">Submit Inquiry</button>
+        <button type="submit" id="contactSubmit" class="btn-primary" style="align-self:flex-start;margin-top:0.5rem">Submit Inquiry</button>
+        <div id="contactStatus" style="margin-top:0.75rem;font-size:0.85rem;letter-spacing:0.05em"></div>
       </form>
     </div>
     <div>
@@ -504,6 +505,50 @@ document.querySelectorAll('.faq-item').forEach(item=>{
     if(!isOpen)item.classList.add('open');
   });
 });
+
+const contactForm=document.getElementById('contactForm');
+if(contactForm){
+  const btn=document.getElementById('contactSubmit');
+  const status=document.getElementById('contactStatus');
+  const setStatus=(msg,ok)=>{status.textContent=msg;status.style.color=ok?'#c8a45c':'#c66';};
+  const mailtoFallback=(name,email,message)=>{
+    const subject=encodeURIComponent('TDC Inquiry from '+name);
+    const body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\n\n'+message);
+    window.location.href='mailto:Tradedictatorcapital@gmail.com?subject='+subject+'&body='+body;
+  };
+  contactForm.addEventListener('submit',async (e)=>{
+    e.preventDefault();
+    const name=contactForm.elements['name'].value.trim();
+    const email=contactForm.elements['email'].value.trim();
+    const message=contactForm.elements['message'].value.trim();
+    if(!name||!email||!message){setStatus('Please fill in every field.',false);return;}
+    btn.disabled=true;
+    const originalText=btn.textContent;
+    btn.textContent='Sending...';
+    setStatus('',true);
+    try{
+      const r=await fetch('https://formsubmit.co/ajax/Tradedictatorcapital@gmail.com',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({name:name,email:email,message:message,_subject:'New TDC Inquiry',_captcha:'false',_template:'table'})
+      });
+      const data=await r.json().catch(()=>({}));
+      const ok=data.success===true||data.success==='true';
+      if(ok){
+        contactForm.reset();
+        btn.textContent='Submitted';
+        setStatus('Thank you. Your inquiry has been received.',true);
+        return;
+      }
+      throw new Error(data.message||'submit failed');
+    }catch(err){
+      btn.textContent=originalText;
+      btn.disabled=false;
+      setStatus('Opening your email app as a fallback...',false);
+      mailtoFallback(name,email,message);
+    }
+  });
+}
 </script>
 </body>
 </html>
